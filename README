@@ -1,0 +1,50 @@
+=== go-list === 
+
+Simple list abstraction for slices.
+
+Package exports:
+
+list.New() // Return new empty list
+ list.New(slice) //Return new list from elements in slice
+ list.New(list) //Returns new list from elements in list
+ list.New(...) //Returns new list with elements preset (note: New(slice1, slice2) makes a list like (list slice1 slice2) not a list like (nconc slice1 slice2) (see Nconc() or list.Flat() below or use New().Add(slice1...).Add(slice2...))
+
+list.Flat(...) //Returns a new list of slices concatenated together.
+list.Single(element0) //Return new list with single element initialised
+list.Nconc(...) //Concatenate all lists together, ignores `nil' values.
+
+Type *List (*[]interface{}):
+
+ *List.Add(...) //Add element(s) to end of list
+ *List.Push(...) //Add element(s) to start of list
+
+ *List.Remove(...) //Remove at indecies
+ *List.Clear() //Clear all elements in list
+
+ *List.Car() //Return first element
+ *List.Cdr() //Return [1:] slice of list
+
+ *List.Slice() //Return list as a slice
+ *List.Slice(start) //Return list as slice [start:]
+ *List.Slice(start,end) //Return list as slice [start:end]
+	//Note that these indecies get passed to Circle() first, so .Slice(-4, -2) is like [len(slice)-4:len(slice)-2] etc
+
+ *List.Map(f) //Map over list
+ *List.MapCar(f) //Map over list, return results of f() in new list
+ *List.MapInto(f) //MapCar but in-place
+ *List.MapRef(f) //Map() but with pointers instead
+ *List.MapCan(f) //Map over list, return results of function f() as concatednated lists
+ *List.When(f) //Map over list, returns new list of results that satisfy f()
+
+ *List.Len() //Length of list
+ *List.Cap() //Capacity of underlying slice
+
+ *List.Circle(index) //Circles index around length of list 
+
+ *List.Get(index) //Return element at circular index
+ *List.Set(index, value) //Sets element at circular index
+
+ *List.Clone() //Clone list into new one. Same as list2 := New(list1)
+
+ *List.RangeCheck(index) // Checks if index is valid
+
