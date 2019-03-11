@@ -35,10 +35,25 @@ func New(initial ...interface{}) *List {
 	}
 }
 
-func Flat(vl ...[]interface{})  *List {
+func Flat(vl ...interface{})  *List {
 	ret := New()
 	for _, v:=range vl {
-		ret.Add(v)
+		switch v.(type) {
+			case []interface{}:
+				ret.Add(v.([]interface{})...)
+			default:
+				if reflect.TypeOf(v).Kind() == reflect.Slice {
+					value := reflect.ValueOf(v)
+					add := make([]interface{}, value.Len())
+					for i:=0;i<value.Len();i++ {
+						add[i] = value.Index(i).Interface()
+					}
+					ret.Add(add...)
+				} else {
+					ret.Add(v)
+				}
+		}
+		//ret.Add(v)
 	}
 	return ret
 }

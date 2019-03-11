@@ -56,4 +56,7 @@ func TestList(t *testing.T) {
 	list = New(New(1, 2, 3, 4, 5, 6))
 	fmt.Println(list)
 	fmt.Println(list.Slice(123, -559))
+
+	list = Flat([]int{1,2}, []int{3,4,5}, 6, 7, "eight")
+	fmt.Println(list)
 }
