@@ -85,17 +85,35 @@ func (this *List) Remove(indecies ...int) *List {
 	return this
 }
 
-func (this *List) Map(f func (interface{})) {
+func (this *List) Map(f interface{}) {
 	sl := *this
-	for _, v := range sl {
-		f(v)
+	g := func(index int, value interface{}) {
+		f.(func (int, interface{}))(index,value)
+	}
+	switch f.(type) {
+		case func(interface{}):
+			g = func(_ int, value interface{}) {
+				f.(func (interface{}))(value)
+			}
+	}
+	for i, v := range sl {
+		g(i, v)
 	}
 }
-func (this *List) MapCar(f func (interface{}) interface{} ) *List {
+func (this *List) MapCar(f interface{}) *List {
 	sl := *this
 	ret := New()
-	for _, v := range sl {
-		ret.Add(f(v))
+	g := func(index int, value interface{}) interface{} {
+		return f.(func(int, interface{}) interface{})(index,value)
+	}
+	switch f.(type) {
+		case func(interface{}) interface{}:
+			g = func(_ int, value interface{}) interface{} {
+				return f.(func (interface{}) interface{})(value)
+			}
+	}
+	for i, v := range sl {
+		ret.Add(g(i, v))
 	}
 	return ret
 }
@@ -148,16 +166,26 @@ func (this *List) Set(index int, val interface{}) {
 	}
 }
 
-func (this *List) MapInto(f func (interface{}) interface{}) {
+func (this *List) MapInto(f interface{}) {
 	for i, v := range *this {
-		(*this)[i] = f(v)
+		switch f.(type) {
+			case func(int,interface{})interface{}:
+				(*this)[i] = f.(func(int,interface{}) interface{})(i, v)
+			default:
+				(*this)[i] = f.(func(interface{}) interface{})(v)
+		}
 	}
 }
 
-func (this *List) MapRef(f func(*interface{})) {
+func (this *List) MapRef(f interface{}) {
 	sl := *this
 	for i,_ := range sl {
-		f(&sl[i])
+		switch f.(type) {
+			case func(int, *interface{}):
+				f.(func(int, *interface{}))(i, &sl[i])
+			default:
+				f.(func(*interface{}))(&sl[i])
+		}
 	}
 }
 
@@ -171,12 +199,17 @@ func Nconc(lists ...*List) *List {
 	return ret
 }
 
-func (this *List) MapCan(f func(interface{}) *List) *List {
+func (this *List) MapCan(f interface{}) *List {
 	over := *this
 	tmp := make([]*List, len(over))
 
 	for i, v :=range over {
-		tmp[i] = f(v)
+		switch f.(type) {
+			case func(interface{}) *List:
+				tmp[i] = f.(func(interface{}) *List)(v)
+			default:
+				tmp[i] = f.(func(int,interface{}) *List)(i,v)
+		}
 	}
 
 	return Nconc(tmp...)
@@ -186,9 +219,19 @@ func Single(val interface{}) *List {
 	return New().Add(val)
 }
 
-func (this *List) When(f func(interface{}) bool) *List {
-	return this.MapCan(func(car interface{}) *List {
-		if f(car) {
+func (this *List) When(f interface{}) *List {
+	g := func(i int, v interface{}) bool {
+		return f.(func (int,interface{}) bool)(i,v)
+	}
+	switch f.(type) {
+		case func(interface{}) bool:
+			g = func(_ int, v interface{}) bool {
+				return f.(func (interface{}) bool)(v)
+			}
+	}
+	return this.MapCan(func(i int, car interface{}) *List {
+		
+		if g(i, car) {
 			return Single(car)
 		} else { return nil }
 	})

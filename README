@@ -48,3 +48,19 @@ Type *List (*[]interface{}):
 
  *List.RangeCheck(index) // Checks if index is valid
 
+ *List.To*s() //Type assertions to basic type. Optionally provide function to call to recover from casting error:
+		list.ToRunes(func( *List,  int,interface{}) { return '?' })
+
+--- S-expression parser ---
+
+In list/sexpr we have a text parser for s-expressions into lists.
+
+Basic usage:
+ list, ok := ParseFull(string) //Parses string into list. ok returns false if the syntax is invalid, the list elements will either be type string or *List
+
+ proto := Parse(string) //Parses into *List of sexpr.Value type. See source for details.
+
+Other functions:
+
+String(proto) //Returns string from proto
+ToList(proto) //Return list of string or *List from list of Values

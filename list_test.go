@@ -23,9 +23,9 @@ func TestList(t *testing.T) {
 		return ok
 	}))
 
-	fmt.Println(list.MapCar(func (val interface{}) interface{} {
+	fmt.Println(list.MapCar(func (i int, val interface{}) interface{} {
 		if v, ok := val.(int); ok {
-			return v * 1000
+			return v * i
 		} else { return val }
 	}))
 
@@ -48,7 +48,14 @@ func TestList(t *testing.T) {
 	fmt.Println(list)
 
 	list = New([]int{1, 2, 3 ,4 ,5})
+	fmt.Println("->", list.ToStrings(func (_ *List,_  int, v interface{}) string { return fmt.Sprintf("=%v", v) }))
 	fmt.Println(list)
+	list.Map(func(index int, value interface{}) {
+		fmt.Println(index, value)
+	})
+	list.Map(func(value interface{}) {
+		fmt.Println("?", value)
+	})
 
 	list = New([]int{1,2}, []int{3,4})
 	fmt.Println(list)
