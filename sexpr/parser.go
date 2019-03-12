@@ -82,6 +82,11 @@ func parse(output *list.List, str *[]rune) {
 			if len(str)>0 { addString(output, str) }
 		} else if char == '(' {
 			//Opens a new sexpr
+			str2 := string(token.ToRunes())
+			token.Clear()
+			if len(str2)>0 {
+				addString(output, str2)
+			}
 			sub := list.New()
 			parse(sub, str)
 			addList(output, sub)
