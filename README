@@ -9,6 +9,7 @@ list.New() // Return new empty list
  list.New(list) //Returns new list from elements in list
  list.New(...) //Returns new list with elements preset (note: New(slice1, slice2) makes a list like (list slice1 slice2) not a list like (nconc slice1 slice2) (see Nconc() or list.Flat() below or use New().Add(slice1...).Add(slice2...))
 
+list.NewAlist(...) //Returns a new alist of key,value pairs. Like, NewAlist("key1","value1","key2","value2") etc. If arg list has a key without value at the end, it is set to `nil'. If a value is a slice or *List, it is added as (key value[0], value[1] ...), but there if functionally no difference between that and (key value)
 list.Flat(...) //Returns a new list of slices concatenated together.
 list.Single(element0) //Return new list with single element initialised
 list.Nconc(...) //Concatenate all lists together, ignores `nil' values.
@@ -51,6 +52,17 @@ Type *List (*[]interface{}):
 
  *List.To*s() //Type assertions to basic type. Optionally provide function to call to recover from casting error:
 		list.ToRunes(func( *List,  int,interface{}) { return '?' })
+
+ *List.AddTuple(key, value) //Adds a new list of 2 elements to end of list
+ *List.PushTuple(key, balue) //Adds new list of 2 elements to start of list
+ *List.Assoc(key, ...) //Treat list as alist, return first tuple to match key and bool if match was successful or not. Optionally provide functions:
+ *List.Assoc(key, eq) //Equals predicate, used to compare keys to `key', or nil, for default. Is func(interface{},interface{})bool
+ *List.Assoc(key, eq, skey) //Function applied to key before comparisons or nil for default, does not affect returns. Can be either func(int,interface{})interface{} or func(interface{})interface{}
+	//If an alist entry has not just 2 values (key value) but multiple (key value1 value2...) then the `Value' slot of returned
+	// tuple is a *List of those. If the alist entry is atom, or is a list (or slice) of size 1, then `nil' is used as the value.
+	//The returning tuple has two interface{} slots: Key and Value, the returning boolean is true is a match was found.
+	//Example:
+	// tuple, ok := New(New("k", "v"), New("k2", "v2"), New("k3", 1)).Assoc("k2") //returns {key:"k2", value:"v2"}, true
 
 --- S-expression parser ---
 

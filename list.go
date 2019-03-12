@@ -58,6 +58,46 @@ func Flat(vl ...interface{})  *List {
 	return ret
 }
 
+func lslice(v interface{}) (*List, bool) {
+	if v == nil { return nil, false }
+	switch v.(type) {
+		case *List:
+			return v.(*List), true
+		default:
+			if reflect.TypeOf(v).Kind() == reflect.Slice {
+				rt := New()
+				val := reflect.ValueOf(v)
+				for i:=0;i<val.Len();i++ {
+					rt.Add(val.Index(i).Interface())
+				}
+				return rt, true
+			}
+	}
+	return nil, false
+}
+
+func NewAlist(from ...interface{}) *List {
+	if len(from) == 0 {
+		return New()
+	} else if (len(from) % 2) != 0 {
+		from = append(from, nil)
+	}
+
+	ret := New()
+	for i:=0;i<len(from);i+=2 {
+		key := from[i]
+		value := from[i+1]
+
+		slist, ok := lslice(value)
+		if ok {
+			ret.Add(New(append([]interface{}{ key }, slist.Slice()...)))
+		} else {
+			ret.Add(New(key, value))
+		}
+	}
+	return ret
+}
+
 func (this *List) Add(vl ...interface{}) *List {
 	*this = append(*this, vl...)
 	return this
@@ -203,6 +243,80 @@ func (this *List) MapRef(f interface{}) {
 				f.(func(*interface{}))(&sl[i])
 		}
 	}
+}
+
+func (this *List) Assoc(akey interface{}, eq ...interface{}) (tuple struct { Key, Value interface{} }, ok bool) {
+	ok = false
+	comp := func(a interface{}, b interface{}) bool {
+		return a == b
+	}
+	key := func(_ int, a interface{}) interface{} {
+		return a
+	}
+	if len(eq)>0 {
+		if eq[0] != nil { comp = eq[0].(func(interface{}, interface{}) bool) }
+		if len(eq)>1 {
+			if eq[1] != nil {
+				switch eq[1].(type) {
+					case func(int,interface{})interface{}:
+						key = eq[1].(func(int,interface{})interface{})
+					default:
+						key = func(_ int, a interface{}) interface{} {
+							return eq[1].(func(interface{})interface{})(a)
+						}
+				}
+			}
+		}
+	}
+	this.Map(func (i int, v interface{}) {
+		if ok {
+			return
+		}
+		var slice []interface{}
+		switch v.(type) {
+			case *List:
+				slice = v.(*List).Slice()
+			default:
+				if reflect.TypeOf(v).Kind() == reflect.Slice {
+					value := reflect.ValueOf(v)
+					slice = make([]interface{}, value.Len())
+					for j :=0;j<value.Len();j++ {
+						slice[j] = value.Index(j).Interface()
+					}
+				} else { 
+					slice = []interface{}{v}
+				}
+		}
+		if len(slice)==0 {
+			return
+		}
+		compk := key(i, slice[0])
+		switch len(slice) {
+			case 0: 
+				return
+			case 1:
+				tuple.Key = slice[0]
+				tuple.Value = nil
+			case 2:
+				tuple.Key = slice[0]
+				tuple.Value = slice[1]
+			default:
+				tuple.Key = slice[0]
+				tuple.Value = New(slice[1:])
+		}
+		if comp(compk, akey) {
+			ok = true
+		}
+	})
+	return
+}
+
+func (this *List) AddTuple(key interface{}, value interface{}) {
+	this.Add(New(key,value))
+}
+
+func (this *List) PushTuple(key, value interface{}) {
+	this.Push(New(key,value))
 }
 
 func Nconc(lists ...*List) *List {

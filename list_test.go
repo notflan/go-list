@@ -5,6 +5,22 @@ import (
 	"fmt"
 )
 
+func TestAssoc(t *testing.T) {
+
+	list := NewAlist("key",1,"key2",2,3,4.4,5,nil,6,nil,"key3",New(1,2,3),"key2",nil,"key4", []interface{} {"hello", "world"}, "K")
+
+	fmt.Println(list.Assoc("key3"))
+	fmt.Println(list.Assoc("key2"))
+	fmt.Println(list.Assoc("K"))
+	fmt.Println(list.Assoc("k"))
+	fmt.Println(list.Assoc("five", func(a interface{}, b interface{}) bool {
+			return a != b
+	}, func(a interface{}) interface{} {
+			if a == "key" { return "five"
+			} else { return a }
+	}))
+}
+
 func TestList(t *testing.T) {
 	list := New()
 	list.Add(1, 2, "three", 4.4)
