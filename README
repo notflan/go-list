@@ -18,7 +18,8 @@ Type *List (*[]interface{}):
  *List.Add(...) //Add element(s) to end of list
  *List.Push(...) //Add element(s) to start of list
 
- *List.Remove(...) //Remove at indecies
+ *List.Remove(...) //Remove at indecies. note: It does this in order, so Remove(0,0) removes the first 2 elements (see RemoveInto())
+ *List.RemoveInto(...) //Remove at indecies in parallel, RemoveInto(0,1) removes the first 2 elements.
  *List.Clear() //Clear all elements in list
 
  *List.Car() //Return first element

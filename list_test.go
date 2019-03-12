@@ -47,7 +47,9 @@ func TestList(t *testing.T) {
 	list = New(1, 2, 3)
 	fmt.Println(list)
 
-	list = New([]int{1, 2, 3 ,4 ,5})
+	list = New([]int{-1, 0, 1, 2, 3 ,4 ,5})
+	list.RemoveInto(0,1,-1)
+	list.Remove(0,1)
 	fmt.Println("->", list.ToStrings(func (_ *List,_  int, v interface{}) string { return fmt.Sprintf("=%v", v) }))
 	fmt.Println(list)
 	list.Map(func(index int, value interface{}) {

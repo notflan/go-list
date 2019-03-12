@@ -85,6 +85,19 @@ func (this *List) Remove(indecies ...int) *List {
 	return this
 }
 
+func (this *List) RemoveInto(indecies ...int) *List {
+	id := make(map[int]bool)
+	m := this.Len()
+	for _,v := range indecies {
+		id[circleSafe(v, m)] = true
+	}
+	*this = *(this.When(func (index int, _ interface{}) bool {
+		_, ok := id[index]
+		return !ok
+	}))
+	return this
+}
+
 func (this *List) Map(f interface{}) {
 	sl := *this
 	g := func(index int, value interface{}) {
@@ -139,6 +152,9 @@ func (this *List) Cap() int {
 }
 
 func circleSafe(index int, max int) int {
+	if max <= 0 {
+		return 0
+	}
 	if index < 0 {
 		return circleSafe(max+index, max)
 	} else {
