@@ -1,7 +1,7 @@
 package sexpr
 
 import (
-	".."
+	"github.com/notflan/go-list"
 	"bytes"
 	"fmt"
 	"regexp"
