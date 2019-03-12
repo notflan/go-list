@@ -20,10 +20,10 @@ func TestSexpr(t *testing.T) {
 	
 
 
+//KeepQuotes= true
 	fmt.Println(str)
 	list := Parse(str)
 	fmt.Println(String(list))
 	fmt.Println(ToList(list))
-
 	fmt.Println(ParseFull(str))
 }

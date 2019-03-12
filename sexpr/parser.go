@@ -10,6 +10,8 @@ import (
 
 type ValueType int
 
+var KeepQuotes bool = false
+
 const (
 	VList ValueType = iota
 	VString
@@ -69,6 +71,9 @@ func parse(output *list.List, str *[]rune) {
 			token.Add(char)
 		} else if inStr {
 			if char == '"' {
+				if KeepQuotes {
+					token.Add('"')
+				}
 				inStr = false
 			} else { token.Add(char) }
 		} else if char == ' ' || char =='\n' || char =='\r' || char =='\t' {
@@ -84,6 +89,9 @@ func parse(output *list.List, str *[]rune) {
 			//Close this
 			break
 		} else if char == '"' {
+			if KeepQuotes {
+				token.Add('"')
+			}
 			inStr = true
 		} else if char == '\\' {
 			inEscape = true
@@ -135,7 +143,11 @@ func write(buf *bytes.Buffer, li *list.List) {
 		}
 		if value.t == VString {
 			if shouldEscape(value.str) {
-				fmt.Fprintf(buf, `"%s"`, escape(value.str))
+				if KeepQuotes {
+					fmt.Fprintf(buf, `%s`, escape(value.str))
+				} else {
+					fmt.Fprintf(buf, `"%s"`, escape(value.str))
+				}
 			} else {
 				buf.WriteString(escape(value.str))
 			}
