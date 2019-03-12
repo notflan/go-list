@@ -6,7 +6,8 @@ import (
 )
 
 func TestSexpr(t *testing.T) {
-	str := `(one two "three" " four" (\five \"six (7) (8 9)) () (10) 11)`
+	str := ` (   one two "three"     " four" (\five \"six (7) (8 9)) () (10) 11)`
+	
 
 
 	fmt.Println(str)
