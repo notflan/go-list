@@ -71,7 +71,7 @@ func parse(output *list.List, str *[]rune) {
 			if char == '"' {
 				inStr = false
 			} else { token.Add(char) }
-		} else if char == ' ' {
+		} else if char == ' ' || char =='\n' || char =='\r' || char =='\t' {
 			str := string(token.ToRunes())
 			token.Clear()
 			if len(str)>0 { addString(output, str) }
@@ -99,7 +99,7 @@ func parse(output *list.List, str *[]rune) {
 }
 
 func Parse(input string) *list.List {
-	valid := regexp.MustCompile(`^\s*\(.*\)\s*$`)
+	valid := regexp.MustCompile(`^\s*\(`)
 
 	if !valid.MatchString(input) {
 		return nil
