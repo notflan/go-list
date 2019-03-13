@@ -70,7 +70,9 @@ func parse(output *list.List, str *[]rune) {
 			inEscape = false
 			token.Add(char)
 		} else if inStr {
-			if char == '"' {
+			if char == '\\' {
+				inEscape = true
+			} else if char == '"' {
 				if KeepQuotes {
 					token.Add('"')
 				}

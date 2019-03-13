@@ -11,7 +11,7 @@ func TestSexpr(t *testing.T) {
 ( one 
   two 
   "three"
-  " four"
+  " \"four\" "
   (\five 
     \"six 
     (7)
