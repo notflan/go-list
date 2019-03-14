@@ -215,6 +215,15 @@ func (this *List) Get(index int) interface{} {
 	}
 }
 
+func (this *List) Ref(index int) *interface{} {
+	index  = this.Circle(index)
+	if this.RangeCheck(index) {
+		return &(*this)[index]
+	} else {
+		return nil
+	}
+}
+
 func (this *List) Set(index int, val interface{}) {
 	index = this.Circle(index)
 	if this.RangeCheck(index) {

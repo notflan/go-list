@@ -45,6 +45,7 @@ Type *List (*[]interface{}):
 
  *List.Get(index) //Return element at circular index
  *List.Set(index, value) //Sets element at circular index
+ *List.Ref(index) //Return pointer to element at circular index
 
  *List.Clone() //Clone list into new one. Same as list2 := New(list1)
 
@@ -75,5 +76,12 @@ Basic usage:
 
 Other functions:
 
-String(proto) //Returns string from proto
-ToList(proto) //Return list of string or *List from list of Values
+sexpr.String(proto) //Returns string from proto
+sexpr.ToList(proto) //Return list of string or *List from list of Values
+
+sexpr.DeepClone(fullOrProto) 	//Returns a clone of list, where all sublists are cloned also.
+sexpr.Path(full, ...)		//Returns pointer to element at path in sublists, example:
+				//	lis, _ := ParseFull(`(one (two (three four) five))`)
+				//	Path(lis, 1, 2) // *five 
+sexpr.Path(full, ..., value)	//Sets element at path to that of value
+				//	Path(lis, 1, 1, 0, "change") // lis is now (one (two (change four) five))
