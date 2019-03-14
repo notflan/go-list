@@ -24,7 +24,14 @@ func TestSexpr(t *testing.T) {
 
 //KeepQuotes= true
 	fmt.Println(str)
+
 	list := Parse(str)
+	full, _ := ParseFull(str)
+	full2 := DeepClone(full)
+	Path(full, 4, 2, "CHANGEEE")
+	fmt.Println(full)
+	fmt.Println(full2)
+	
 	fmt.Println(String(list))
 	fmt.Println(ToList(list))
 	fmt.Println(ParseFull(str))

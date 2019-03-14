@@ -192,3 +192,62 @@ func ParseFull(str string) (*list.List, bool) {
 
 	return ToList(proto), true
 }
+
+func DeepClone(lis *list.List) *list.List {
+	return lis.MapCar(func (i interface{}) interface{} {
+		switch i.(type) {
+			case Value:
+				//This is proto
+				val := i.(Value)
+				if val.t == VString {
+					return val
+				} else {
+					val2 := Value{}
+					val2.t = VList
+					val2.list = DeepClone(val.list)
+					return val2
+				}
+			case *list.List:
+				//This is not
+				return DeepClone(i.(*list.List))
+			case string:
+				return i.(string)
+			default:
+				return i
+		}
+	})
+}
+
+func Path(lis *list.List, rest ...interface{}) *interface{} {
+
+	if len(rest)<1 {
+		return nil //Invalid path
+	}
+
+	if len(rest)>1 {
+		switch rest[len(rest)-1].(type) {
+			case int:
+			default:
+				val := rest[len(rest)-1]
+				ptr := Path(lis, rest[:len(rest)-1]...)
+				if ptr != nil {
+					*ptr = val
+					return ptr
+				} else { return nil }
+		}
+	}
+
+	if index, ok := rest[0].(int); ok {
+		value := lis.Ref(index)
+		if len(rest) == 1 {
+			//Terminate and return
+			return value
+		} else {
+			if oxycodone, ok := (*value).(*list.List); ok {
+				return Path(oxycodone, rest[1:]...)
+			} else {
+				return nil //Invalid path
+			}
+		}
+	} else { return nil }
+}
