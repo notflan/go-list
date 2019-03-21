@@ -30,6 +30,8 @@ Type *List (*[]interface{}):
  *List.Slice(start) //Return list as slice [start:]
  *List.Slice(start,end) //Return list as slice [start:end]
 	//Note that these indecies get passed to Circle() first, so .Slice(-4, -2) is like [len(slice)-4:len(slice)-2] etc
+ *List.SliceInto(slice, ...) //Like Slice, but puts into an already defined slice.
+ *List.SliceReflect(example, ...) //Like Slice, but uses reflection to cast to type of `example', or uses the type of the first element in the sliced list, if `example' is nil.
 
  *List.Map(f) //Map over list
  *List.MapCar(f) //Map over list, return results of f() in new list

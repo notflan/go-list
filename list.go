@@ -3,6 +3,8 @@ package list
 import (
 	"fmt"
 	"reflect"
+	"strconv"
+	"github.com/pkg/errors"
 )
 
 type List  []interface{}
@@ -400,4 +402,43 @@ func (this *List) Cdr() *List {
 
 func (this *List) String() string {
 	return fmt.Sprintf("%v", *this)
+}
+
+func (this *List) SliceInto(slice interface{}, start ...int) error {
+	
+	me := this.Slice(start...)
+
+	if reflect.TypeOf(slice).Kind() == reflect.Slice {
+		rval := reflect.ValueOf(slice)
+		if rval.Len() >= len(me) {
+			for i, v := range me {
+				rval.Index(i).Set(reflect.ValueOf(v))
+			}
+			return nil
+		}
+		return errors.New("list: `slice' if wrong length (expected "+ strconv.Itoa(len(me))+", got "+strconv.Itoa(rval.Len())+")")
+	}
+	 return errors.New("list: `slice' is not a slice")
+}
+
+func (this *List) SliceReflect(example interface{}, start ...int) interface{} {
+
+	me := this.Slice(start...)
+
+	if len(me) < 1 {
+		return make([]interface{},0)
+	}
+
+	if example == nil {
+		example = me[0]
+	}
+	
+	x := reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(example)), len(me), len(me))
+	//x := reflect.New(rt.Type())
+
+	for i, v := range me {
+		x.Index(i).Set(reflect.ValueOf(v))
+	}
+
+	return x.Interface()
 }

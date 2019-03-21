@@ -84,4 +84,13 @@ func TestList(t *testing.T) {
 
 	list = Flat([]int{1,2}, []int{3,4,5}, 6, 7, "eight")
 	fmt.Println(list)
+
+	fmt.Println(New(1,2,3,4,5).SliceReflect(nil))
+
+	rt := make([]int, 3)
+	if err := New(1,2,3,4,5).SliceInto(rt, 2); err != nil {
+		t.Errorf("SliceInto failed: %v", err)
+	}
+	fmt.Println(rt)
+
 }
