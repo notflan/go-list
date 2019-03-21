@@ -426,7 +426,11 @@ func (this *List) SliceReflect(example interface{}, start ...int) interface{} {
 	me := this.Slice(start...)
 
 	if len(me) < 1 {
-		return make([]interface{},0)
+		if example == nil {
+			return make([]interface{},0)
+		} else {
+			return reflect.MakeSlice(reflect.SliceOf(reflect.TypeOf(example)),0,0).Interface()
+		}
 	}
 
 	if example == nil {
