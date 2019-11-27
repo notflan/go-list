@@ -446,3 +446,25 @@ func (this *List) SliceReflect(example interface{}, start ...int) interface{} {
 
 	return x.Interface()
 }
+
+func (list *List) Find(finder func(interface{}) bool) int {
+	for i, v := range *list {
+		if finder(v) {
+			return i
+		}
+	}
+	return -1
+}
+
+func (list *List) FindMany(finders ...func(interface{}) bool) []int {
+	ret := New()
+	for i, v := range *list {
+		for _, finder := range finders {
+			if finder(v) {
+				ret.Add(i)
+			}
+		}
+	}
+
+	return ret.SliceReflect(int(1)).([]int)
+}
